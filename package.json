@@ -1,0 +1,31 @@
+{
+  "name": "ideapitch",
+  "version": "1.0.0",
+  "description": "IdeaPitch is an app where anyone can pitch their idea and raise funds to give life to the idea.",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiproDebnath/IdeaPitch.git"
+  },
+  "author": "Dipro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DiproDebnath/IdeaPitch/issues"
+  },
+  "homepage": "https://github.com/DiproDebnath/IdeaPitch#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-errors": "^2.0.0",
+    "joi": "^17.7.0",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.25.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "sequelize-cli": "^6.5.2"
+  }
+}
