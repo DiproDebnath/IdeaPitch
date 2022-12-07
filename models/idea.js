@@ -1,7 +1,8 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+const SequelizeSlugify = require("sequelize-slugify");
+
+
 module.exports = (sequelize, DataTypes) => {
   class Idea extends Model {
     /**
@@ -13,34 +14,47 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Idea.init({
-    title: {
-      allowNull: false,
-      type: DataTypes.STRING
+
+  Idea.init(
+    {
+      title: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
+      slug: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
+      description: {
+        allowNull: false,
+        type: DataTypes.TEXT,
+      },
+      thumbnail: {
+        allowNull: false,
+        type: DataTypes.STRING
+      },
+      budget: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
+      totalFund: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
+      userId: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
     },
-    slug: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    description: {
-      allowNull: false,
-      type: DataTypes.TEXT
-    },
-    budget: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    totalFund: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    userId: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-  }, {
-    sequelize,
-    modelName: 'Idea',
+    {
+      sequelize,
+      modelName: "Idea",
+    }
+  );
+
+  SequelizeSlugify.slugifyModel(Idea, {
+    source: ["title"],
   });
+
   return Idea;
 };

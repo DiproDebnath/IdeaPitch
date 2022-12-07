@@ -21,6 +21,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT
       },
+      thumbnail: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       budget: {
         allowNull: false,
         type: Sequelize.STRING

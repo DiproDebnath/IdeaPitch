@@ -2,7 +2,11 @@ const express = require("express");
 const app = express();
 const { sequelize } = require("./models");
 
+const fileUpload = require('express-fileupload');
 
+app.use(fileUpload({
+  createParentPath: true
+}));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,11 +18,16 @@ app.get("/", (req, res) => {
   res.json("IdeaPitch Project");
 });
 
+const authRouter = require("./routes/auth");
+const ideaRouter = require("./routes/idea");
 
+
+app.use("/", authRouter);
+app.use("/idea", ideaRouter);
 
 // Error Handler
 app.use((err, req, res, next) => {
-  console.log(err);
+ 
   if (err.status && err.status !== 500) {
     return res.status(err.status).json({
       error: {
