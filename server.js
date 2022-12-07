@@ -27,7 +27,7 @@ app.use("/idea", ideaRouter);
 
 // Error Handler
 app.use((err, req, res, next) => {
- 
+console.log(err);
   if (err.status && err.status !== 500) {
     return res.status(err.status).json({
       error: {

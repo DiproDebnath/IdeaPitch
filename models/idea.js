@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       slug: {
-        allowNull: false,
+      
         type: DataTypes.STRING,
       },
       description: {
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       totalFund: {
-        allowNull: false,
+       
         type: DataTypes.STRING,
       },
       userId: {

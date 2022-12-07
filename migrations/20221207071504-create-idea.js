@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       totalFund: {
-        allowNull: false,
+       
         type: Sequelize.STRING
       },
       userId: {

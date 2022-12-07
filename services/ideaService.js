@@ -2,29 +2,47 @@ const jwt = require("jsonwebtoken");
 const { Idea } = require("../models");
 
 module.exports = {
-  createIdea: async (IdeaData) => {
-    const idea = Idea.create({});
+  createIdea: async (req, thumbnail) => {
+
+    const IdeaData  = req.body;
+          IdeaData.thumbnail = thumbnail;
+          IdeaData.userId = req.user.id;
+    const idea = await Idea.create(IdeaData);
+
+    // console.log(idea);
   },
-  handleFileUpload: (req) => {
+  handleFileUpload: async (req) => {
     try {
       if (!req.files) {
-        res.send({
+        return {
           success: false,
-          status: 401,
-          message: "No file uploaded",
-        });
+          status: 422,
+          message: "thumbnail is required",
+        };
       } else {
+        const file = req.files.thumbnail;
 
+        if (!(file.mimetype == "image/jpeg" || file.mimetype == "image/png" || file.mimetype == "image/webp")) {
+          return {
+            success: false,
+            status: 422,
+            message: "thumbnail type must be jpeg or png or webp ",
+          };
+      } 
 
-        const thumbnail = req.files.thumbnail.mv("./uploads/" + req.files.thumbnail.name);
-console.log(thumbnail);
+        const thumbnail = "./uploads/" + Date.now().toString() + "_" + file.name;
+
+         await file.mv(thumbnail);
+        
         return {
           success: true,
           thumbnail
         };
       }
     } catch (err) {
+      console.log(err);
       return {
+        
         success: false,
         status: 500,
         message: "Internal server error",
