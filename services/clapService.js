@@ -4,7 +4,7 @@ module.exports = {
   addClap: async (validationData, userId, reqData) => {
     try {
       reqData.userId = userId;
-
+      reqData.claps = reqData.claps >= 50 ? 50 : reqData.claps;
       if (validationData.status == 401) {
         const clap = await Clap.create(reqData);
 

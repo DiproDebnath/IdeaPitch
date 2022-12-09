@@ -1,15 +1,12 @@
 const express = require("express");
 const app = express();
 const { sequelize } = require("./models");
-
+const middleware = require("./middlewares");
 const fileUpload = require("express-fileupload");
 
 app.use(
   fileUpload({
-    createParentPath: true,
-    limits: {
-      fileSize: 2 * 1024 * 1024 ,
-    },
+    createParentPath: true
   })
 );
 app.use(express.static("uploads"));
@@ -31,7 +28,7 @@ app.use("/idea/clap", clapRouter);
 app.use("/idea", ideaRouter);
 app.use("/user", userRouter);
 
-app.use("/admin/idea", adminIdeaRouter);
+app.use("/admin/idea",  middleware.verifyAuth("admin"), adminIdeaRouter);
 
 // Error Handler
 app.use((err, req, res, next) => {

@@ -22,27 +22,60 @@ module.exports = {
 
     res.json(ideaData.data);
   },
-  
+
   createIdea: async (req, res) => {
 
     const slugValidation = await ideaService.checkSlug(req.body.title);
-    
+
     if (!slugValidation.success)
       throw createHttpError(slugValidation.status, uploadslugValidationData.message);
 
 
     const uploadData = await ideaService.handleFileUpload(req);
-    
+
     if (!uploadData.success)
       throw createHttpError(uploadData.status, uploadData.message);
-
-    
 
     const ideaData = await ideaService.createIdea(req, uploadData.thumbnail, slugValidation.slug);
 
     if (!ideaData.success)
-    throw createHttpError(ideaData.status, ideaData.message);
+      throw createHttpError(ideaData.status, ideaData.message);
 
     res.json(ideaData.data);
+  },
+
+  sendFund: async (req, res) => {
+    const ideaValidation = await ideaService.validateIdea(
+      req.body.ideaId
+    );
+
+    if (!ideaValidation.success)
+     throw createHttpError(ideaValidation.status, ideaValidation.message);
+
+
+   const fundValidatin = await ideaService.validateUserAndFunds(
+      req.body,
+      req.user.id,
+      ideaValidation.data.idea
+    );
+    if (!fundValidatin.success)
+      throw createHttpError(fundValidatin.status, fundValidatin.message);
+
+    const fundData = {
+      amount: req.body.amount,
+      userId: req.user.id,
+      ideaId: req.body.ideaId,
+      note: req.body.note,
+    };
+
+    const ideaFundData = await ideaService.sendFund(
+      fundData,
+      fundValidatin.userFund
+    );
+
+    if (!ideaFundData.success)
+      throw createHttpError(ideaFundData.status, ideaFundData.message);
+
+    res.json(ideaFundData.data.ideaFund);
   },
 };

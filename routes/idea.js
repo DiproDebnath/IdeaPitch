@@ -12,28 +12,19 @@ router.post(
   captureError(ideaController.createIdea)
 );
 
-
-
-// router.get(
-//   "/user/idea",
-//   middleware.verifyAuth(),
-//   captureError(ideaController.getAllIdeas)
-// );
-
+router.post(
+  "/sendFund",
+  middleware.verifyAuth(),
+  middleware.requestValidator("idea", "sendFund"),
+  captureError(ideaController.sendFund)
+);
 
 // public api
 
-router.get(
-  "/",
-  captureError(ideaController.getAllIdeas)
-);
-
-router.get(
-  "/:id",
-  captureError(ideaController.getIdeaById)
-);
+router.get("/", captureError(ideaController.getAllIdeas));
 
 
 
+router.get("/:id", captureError(ideaController.getIdeaById));
 
 module.exports = router;
