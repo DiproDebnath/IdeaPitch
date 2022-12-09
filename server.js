@@ -23,11 +23,13 @@ app.get("/", (req, res) => {
 const authRouter = require("./routes/auth");
 const ideaRouter = require("./routes/idea");
 const clapRouter = require("./routes/clap");
+const userRouter = require("./routes/user");
 const adminIdeaRouter = require("./routes/admin/idea");
 
 app.use("/", authRouter);
 app.use("/idea/clap", clapRouter);
 app.use("/idea", ideaRouter);
+app.use("/user", userRouter);
 
 app.use("/admin/idea", adminIdeaRouter);
 

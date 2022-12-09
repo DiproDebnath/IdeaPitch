@@ -34,7 +34,7 @@ module.exports = {
             userId,
           },
         });
-        
+
         return {
           success: true,
           data: {
@@ -42,6 +42,45 @@ module.exports = {
           },
         };
       }
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  getUserClaps: async (ideaId, userId) => {
+    try {
+      const clap = await Clap.findOne({
+        attributes: [
+          "claps",
+        ],
+        where: {
+          ideaId,
+          userId,
+        },
+      });
+
+      if (!clap) {
+        return {
+          success: true,
+            data: {
+              clap: {
+                claps: 0
+              },
+            },
+        };
+      }
+
+      return {
+        success: true,
+        data: {
+          clap,
+        },
+      };
     } catch (err) {
       console.log(err);
 

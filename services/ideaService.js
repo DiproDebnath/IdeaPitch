@@ -1,23 +1,35 @@
-const { Idea } = require("../models");
-const { Op } = require("sequelize");
+const { Idea, Clap } = require("../models");
+const { Op, fn, col } = require("sequelize");
 const slugify = require("slugify");
 
 module.exports = {
-  getAllIdeas: async (limit, offset ) => {
+  getAllIdeas: async (limit, offset) => {
     try {
-    
       const idea = await Idea.findAll({
-        where: {
-          isApproved: "approved"
+        subQuery: false,
+        attributes: {
+          include: [[fn("SUM", col("Claps.claps")), "numClaps"]]
         },
-        limit, offset
+        include: [
+          {
+            model: Clap,
+            attributes: [],
+          },
+        ],
+
+        where: {
+          isApproved: "approved",
+        },
+        limit,
+        offset,
+        group: ["Idea.id"],
       });
-      if(!idea.length){
+      if (!idea.length) {
         return {
           success: false,
           status: 404,
-          message: "No Idea found"
-        }
+          message: "No Idea found",
+        };
       }
 
       return {
@@ -38,21 +50,28 @@ module.exports = {
   },
   getIdeaById: async (id) => {
     try {
-    
       const idea = await Idea.findOne({
+        attributes: {
+          include: [[fn("SUM", col("Claps.claps")), "numClaps"]]
+        },
+        include: [
+          {
+            model: Clap,
+            attributes: [],
+          },
+        ],
         where: {
           id,
-          isApproved: "approved"
+          isApproved: "approved",
         },
-      
       });
 
-      if(!idea){
+      if (!idea) {
         return {
           success: false,
           status: 404,
-          message: "No Idea found"
-        }
+          message: "No Idea found",
+        };
       }
 
       return {
