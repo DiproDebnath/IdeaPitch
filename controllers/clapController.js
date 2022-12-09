@@ -1,17 +1,23 @@
 const createHttpError = require("http-errors");
-const ideaService = require("../services/ideaService");
+const clapService = require("../services/clapService");
 
 module.exports = {
-  getAllIdeas: async (req, res) => {
-    let limit = req.params?.limit ? req.params.limit : 10;
-    let offset = req.params?.offset ? req.params.offset : 0;
+  addClap: async (req, res) => {
+   
+    // checking claps. return 0 if don't find any
+    const validateUserClap = await clapService.validateUserClap(req.user.id, req.body);
+   
+    if (!validateUserClap.success && validateUserClap.status != 401)
+      throw createHttpError(validateUserClap.status, validateUserClap.message);
+   
+    
 
-    const ideaData = await ideaService.getAllIdeas(limit, offset);
+     const clapData = await clapService.addClap(validateUserClap, req.user.id, req.body);
 
-    if (!ideaData.success)
-      throw createHttpError(ideaData.status, ideaData.message);
+     if (!clapData.success)
+       throw createHttpError(clapData.status, clapData.message);
 
-    res.json(ideaData.data);
+    res.json(clapData.data);
   },
   getIdeaById: async (req, res) => {
   

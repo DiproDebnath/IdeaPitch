@@ -25,7 +25,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.3",
     "sequelize": "^6.25.3",
-    "sequelize-slugify": "^1.6.2"
+    "slugify": "^1.6.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",

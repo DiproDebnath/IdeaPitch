@@ -7,16 +7,33 @@ const { captureError } = require("../utils/helper");
 
 router.post(
   "/create",
-  middleware.verifyAuth,
+  middleware.verifyAuth(),
   middleware.requestValidator("idea", "createIdea"),
   captureError(ideaController.createIdea)
 );
 
 
-// router.post(
-//     "/signin",
-//     middleware.requestValidator("auth", "aunthentication"),
-//     captureError(authController.signIn)
-//   );
+
+// router.get(
+//   "/user/idea",
+//   middleware.verifyAuth(),
+//   captureError(ideaController.getAllIdeas)
+// );
+
+
+// public api
+
+router.get(
+  "/",
+  captureError(ideaController.getAllIdeas)
+);
+
+router.get(
+  "/:id",
+  captureError(ideaController.getIdeaById)
+);
+
+
+
 
 module.exports = router;

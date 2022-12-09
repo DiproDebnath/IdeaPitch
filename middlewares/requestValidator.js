@@ -1,31 +1,37 @@
 const createHttpError = require('http-errors')
-//* Include joi to check error type 
+//* Include joi to check error type
 const Joi = require('joi')
 
 const Schemas = require('../validatorSchemas')
 
 /**
- * 
- * @param {string} schema 
- * @param {string} route 
+ *
+ * @param {string} schema
+ * @param {string} route
  * @returns object
  */
-module.exports = function(schema, route) {
-    
-    if(!Schemas.hasOwnProperty(schema))
-        throw new Error(`'${schema}' schema is not exist`)
+module.exports = function (schema, route) {
+  if (!Schemas.hasOwnProperty(schema))
+    throw new Error(`'${schema}' schema is not exist`);
 
-    return async function(req, res, next) {
-        try {
-            const validated = await Schemas[schema][route].validateAsync(req.body, {abortEarly: true})
-            req.body = validated
-           
-            next()
-        } catch (err) {
-          
-            if(err.isJoi) 
-                return next(createHttpError(422, {message: err.message}))
-            next(createHttpError(500))
-        }
+  return async function (req, res, next) {
+    try {
+        let validated
+      if (req.files) {
+         validated = await Schemas[schema][route].validateAsync(req.body, {
+          allowUnknown: true,
+        });
+      } else {
+         validated = await Schemas[schema][route].validateAsync(req.body);
+      }
+      req.body = validated;
+
+      next();
+    } catch (err) {
+        console.log(err);
+      if (err.isJoi)
+        return next(createHttpError(422, { message: err.message }));
+      next(createHttpError(500));
     }
-}
+  };
+};

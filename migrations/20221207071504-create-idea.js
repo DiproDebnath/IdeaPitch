@@ -37,6 +37,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      isApproved: {
+        type: Sequelize.ENUM(["approved", "pending", "rejected"]),
+        defaultValue: "pending"
+      },
+      note: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
