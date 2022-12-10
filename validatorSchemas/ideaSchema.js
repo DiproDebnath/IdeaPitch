@@ -6,6 +6,11 @@ module.exports = {
     description: Joi.string().required(),
     budget: Joi.number().min(1000).required(),
   }),
+  updateIdea: Joi.object({
+    title: Joi.string(),
+    description: Joi.string(),
+    budget: Joi.number().min(1000),
+  }),
 
   
   reject: Joi.object({

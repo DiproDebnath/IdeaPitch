@@ -18,6 +18,21 @@ router.post(
   middleware.requestValidator("idea", "sendFund"),
   captureError(ideaController.sendFund)
 );
+
+
+router.post(
+  "/:id/update",
+  middleware.verifyAuth(),
+  middleware.requestValidator("idea", "updateIdea"),
+  captureError(ideaController.updateIdea)
+);
+
+router.get(
+  "/:id/delete",
+  middleware.verifyAuth(),
+  captureError(ideaController.deleteIdea)
+);
+
 router.get(
   "/:id/returnFund",
   middleware.verifyAuth(),

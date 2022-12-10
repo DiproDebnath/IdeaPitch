@@ -9,75 +9,13 @@ const {
 const { Op, fn, col } = require("sequelize");
 const slugify = require("slugify");
 const moment = require("moment");
-const e = require("express");
+
+const maxFileSize = 2097152;
+
 const ideaService = {
   getIdeas: async (args) => {
-    let singlequery = false;
-    let queryOptions = {
-      attributes: {
-        include: [],
-      },
-      include: [],
-      where: {},
-     
-    };
-    // inserting params for query object
-    args.options.forEach((key) => {
-      switch (key) {
-        case "single":
-          singlequery = true;
-          break;
-        case "claps":
-          queryOptions.subQuery = false;
-          queryOptions.attributes.include.push([
-            fn("SUM", col("Claps.claps")),
-            "numClaps",
-          ]);
-          queryOptions.include.push({
-            model: Clap,
-            attributes: [],
-          });
-          break;
-        case "donor":
-          queryOptions.include.push({
-            model: User,
-            as: "Donor",
-            attributes: ["id", "username"],
-            through: {
-              attributes: [],
-              where: {isReturn: false}
-            },
-          });
-          break;
-        case "fundraiser":
-          queryOptions.include.push({
-            model: User,
-            as: "fundRaiser",
-            attributes: ["id", "username"],
-          });
-          break;
-        case "dontedIdea":
-          queryOptions.include.push({
-            model: IdeaFund,
-            attributes: [],
-            where: {isReturn: false,  userId: args.userId},
-            required: true
-          });
-          break;
-        case "public":
-          queryOptions.where.isApproved = "approved";
-          break;
-          case "userIdea":
-            queryOptions.where.userId = args.userId
-          break;
-
-        case "order":
-          queryOptions.order = [args.order];
-          break;
-        default:
-          break;
-      }
-    });
+    const formatedData = ideaService.createQueryData(args);
+    const { singlequery, queryOptions } = formatedData;
     try {
       let idea = null;
       if (singlequery) {
@@ -121,6 +59,77 @@ const ideaService = {
       };
     }
   },
+  createQueryData: (args) => {
+    let singlequery = false;
+    let queryOptions = {
+      attributes: {
+        include: [],
+      },
+      include: [],
+      where: {},
+    };
+    // inserting params for query object
+    args.options.forEach((key) => {
+      switch (key) {
+        case "single":
+          singlequery = true;
+          break;
+        case "claps":
+          queryOptions.subQuery = false;
+          queryOptions.attributes.include.push([
+            fn("SUM", col("Claps.claps")),
+            "numClaps",
+          ]);
+          queryOptions.include.push({
+            model: Clap,
+            attributes: [],
+          });
+          break;
+        case "donor":
+          queryOptions.include.push({
+            model: User,
+            as: "Donor",
+            attributes: ["id", "username"],
+            through: {
+              attributes: [],
+              where: { isReturn: false },
+            },
+          });
+          break;
+        case "fundraiser":
+          queryOptions.include.push({
+            model: User,
+            as: "fundRaiser",
+            attributes: ["id", "username"],
+          });
+          break;
+        case "dontedIdea":
+          queryOptions.include.push({
+            model: IdeaFund,
+            attributes: [],
+            where: { isReturn: false, userId: args.userId },
+            required: true,
+          });
+          break;
+        case "public":
+          queryOptions.where.isApproved = "approved";
+          break;
+        case "userIdea":
+          queryOptions.where.userId = args.userId;
+          break;
+
+        case "order":
+          queryOptions.order = [args.order];
+          break;
+        default:
+          break;
+      }
+    });
+    return {
+      queryOptions,
+      singlequery,
+    };
+  },
   createIdea: async (req, thumbnail, slug) => {
     try {
       const IdeaData = req.body;
@@ -146,6 +155,74 @@ const ideaService = {
       };
     }
   },
+  updateIdea: async (req) => {
+    try {
+      const IdeaData = {};
+      if (req.body.title) {
+        IdeaData.title = req.body.title;
+      }
+      if (req.body.description) {
+        IdeaData.description = req.body.description;
+      }
+      if (req.body.thumbnail) {
+        IdeaData.thumbnail = req.body.thumbnail;
+      }
+
+      if (req.body.budget) {
+        IdeaData.budget = req.body.budget;
+      }
+
+      await Idea.update(IdeaData, {
+        where: {
+          id: req.params.id,
+        },
+      });
+
+      const idea = await Idea.findOne({
+        where: {
+          id: req.params.id,
+        },
+      });
+      return {
+        success: true,
+        data: {
+          idea,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  deleteIdea: async (id) => {
+    try {
+     
+
+      const idea = await Idea.destroy({
+        where: {
+          id
+        },
+      });
+      console.log(idea);
+      return {
+        success: true,
+        message: "idea is successfully deleted"
+      };
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
 
   handleFileUpload: async (req) => {
     try {
@@ -157,7 +234,7 @@ const ideaService = {
         };
       } else {
         const file = req.files.thumbnail;
-
+        console.log(file);
         const checkFileType =
           file.mimetype == "image/jpeg" ||
           file.mimetype == "image/png" ||
@@ -171,6 +248,13 @@ const ideaService = {
           };
         }
 
+        if (file.size > maxFileSize) {
+          return {
+            success: false,
+            status: 422,
+            message: "maximum file size limit 2MB",
+          };
+        }
         const thumbnail = Date.now().toString() + "_" + file.name;
 
         await file.mv("./uploads/" + thumbnail);
@@ -256,10 +340,9 @@ const ideaService = {
     }
   },
   sendFund: async (fundData, userFund, idea) => {
-   
     const userFundLeft = Number(userFund.amount) - Number(fundData.amount);
     const totalFund = Number(idea.totalFund) + Number(fundData.amount);
-    
+
     const t = await sequelize.transaction();
 
     try {
@@ -403,7 +486,7 @@ const ideaService = {
       };
     }
   },
-  validateIdea: async (id) => {
+  validateIdea: async (id, isApprove = false) => {
     try {
       const idea = await Idea.findOne({
         where: {
@@ -418,6 +501,15 @@ const ideaService = {
           message: "No Idea found",
         };
       }
+
+      if (idea.isApproved == "approved") {
+        return {
+          success: false,
+          status: 404,
+          message: "Can't update or delete approved idea",
+        };
+      }
+
       return {
         success: true,
         data: {
@@ -519,12 +611,12 @@ const ideaService = {
           userId,
         },
       });
-      
+
       return {
         success: true,
         data: {
           userFund,
-          ideaFund
+          ideaFund,
         },
       };
     } catch (err) {

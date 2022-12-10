@@ -36,7 +36,7 @@ module.exports = {
     if (!slugValidation.success)
       throw createHttpError(
         slugValidation.status,
-        uploadslugValidationData.message
+        slugValidation.message
       );
 
     const uploadData = await ideaService.handleFileUpload(req);
@@ -123,5 +123,52 @@ module.exports = {
       throw createHttpError(userFundData.status, userFundData.message);
 
     res.json(userFundData.data);
+  },
+
+  updateIdea: async (req, res) => {
+    const ideaValidation = await ideaService.validateIdea(req.params.id, true);
+
+    if (!ideaValidation.success)
+      throw createHttpError(
+        ideaValidation.status,
+        ideaValidation.message
+      );
+
+      if(req.files){
+        const uploadData = await ideaService.handleFileUpload(req);
+        if (!uploadData.success)
+          throw createHttpError(uploadData.status, uploadData.message); 
+          
+        req.body.thumbnail = uploadData.thumbnail
+      }
+
+   
+    const ideaData = await ideaService.updateIdea(req);
+
+    if (!ideaData.success)
+      throw createHttpError(ideaData.status, ideaData.message);
+
+    res.json(ideaData.data);
+  },
+
+  deleteIdea: async (req, res) => {
+   
+    const ideaValidation = await ideaService.validateIdea(req.params.id, true);
+
+    if (!ideaValidation.success)
+      throw createHttpError(
+        ideaValidation.status,
+        ideaValidation.message
+      );
+
+    const ideaData = await ideaService.deleteIdea(
+      req.params.id
+    );
+
+    if (!ideaData.success)
+      throw createHttpError(ideaData.status, ideaData.message);
+
+
+    res.json(ideaData);
   },
 };
