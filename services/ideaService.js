@@ -56,9 +56,21 @@ const ideaService = {
             attributes: ["id", "username"],
           });
           break;
+        case "dontedIdea":
+          queryOptions.include.push({
+            model: IdeaFund,
+            attributes: [],
+            where: {isReturn: false,  userId: args.userId},
+            required: true
+          });
+          break;
         case "public":
           queryOptions.where.isApproved = "approved";
           break;
+          case "userIdea":
+            queryOptions.where.userId = args.userId
+          break;
+
         case "order":
           queryOptions.order = [args.order];
           break;

@@ -21,7 +21,7 @@ module.exports = {
       id: req.params.id,
       options: ["single", "fundraiser"],
     };
-    const ideaData = await ideaService.getIdeaById(req.params.id);
+    const ideaData = await ideaService.getIdeas(args);
 
     if (!ideaData.success)
       throw createHttpError(ideaData.status, ideaData.message);
