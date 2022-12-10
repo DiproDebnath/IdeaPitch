@@ -2,7 +2,9 @@ const jwt = require("jsonwebtoken");
 const { User, sequelize, UserFund } = require("../models");
 const bcrypt = require("bcryptjs");
 const API_SECRET = require("../config/config.json")["apiSecret"];
-module.exports = {
+
+
+const authService = {
   signIn: async (userData) => {
     try {
       const user = await User.findOne({
@@ -125,3 +127,6 @@ module.exports = {
     }
   },
 };
+
+
+module.exports = authService;

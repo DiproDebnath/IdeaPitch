@@ -1,6 +1,6 @@
 const { Clap } = require("../models");
 
-module.exports = {
+const clapService = {
   addClap: async (validationData, userId, reqData) => {
     try {
       reqData.userId = userId;
@@ -134,3 +134,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = clapService;

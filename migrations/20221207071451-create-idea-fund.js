@@ -21,8 +21,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      note: {
-        type: Sequelize.STRING
+      isReturn: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,

@@ -18,6 +18,11 @@ router.post(
   middleware.requestValidator("idea", "sendFund"),
   captureError(ideaController.sendFund)
 );
+router.get(
+  "/:id/returnFund",
+  middleware.verifyAuth(),
+  captureError(ideaController.returnFund)
+);
 
 // public api
 

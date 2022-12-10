@@ -1,40 +1,96 @@
-const { Idea, Clap, IdeaFund, UserFund, sequelize } = require("../models");
+const {
+  User,
+  Idea,
+  Clap,
+  IdeaFund,
+  UserFund,
+  sequelize,
+} = require("../models");
 const { Op, fn, col } = require("sequelize");
 const slugify = require("slugify");
-
-module.exports = {
-  getAllIdeas: async (limit, offset) => {
-    try {
-      const idea = await Idea.findAll({
-        subQuery: false,
-        attributes: {
-          include: [[fn("SUM", col("Claps.claps")), "numClaps"]],
-          include: [[fn("SUM", col("IdeaFund.amount")), "totalFundsss"]],
-        },
-        include: [
-          {
+const moment = require("moment");
+const e = require("express");
+const ideaService = {
+  getIdeas: async (args) => {
+    let singlequery = false;
+    let queryOptions = {
+      attributes: {
+        include: [],
+      },
+      include: [],
+      where: {},
+     
+    };
+    // inserting params for query object
+    args.options.forEach((key) => {
+      switch (key) {
+        case "single":
+          singlequery = true;
+          break;
+        case "claps":
+          queryOptions.subQuery = false;
+          queryOptions.attributes.include.push([
+            fn("SUM", col("Claps.claps")),
+            "numClaps",
+          ]);
+          queryOptions.include.push({
             model: Clap,
             attributes: [],
-          },
-          {
-            model: IdeaFund,
-            attributes: [],
-          },
-        ],
+          });
+          break;
+        case "donor":
+          queryOptions.include.push({
+            model: User,
+            as: "Donor",
+            attributes: ["id", "username"],
+            through: {
+              attributes: [],
+              where: {isReturn: false}
+            },
+          });
+          break;
+        case "fundraiser":
+          queryOptions.include.push({
+            model: User,
+            as: "fundRaiser",
+            attributes: ["id", "username"],
+          });
+          break;
+        case "public":
+          queryOptions.where.isApproved = "approved";
+          break;
+        case "order":
+          queryOptions.order = [args.order];
+          break;
+        default:
+          break;
+      }
+    });
+    try {
+      let idea = null;
+      if (singlequery) {
+        queryOptions.where.id = args.id;
+        idea = await Idea.findOne(queryOptions);
+        if (!idea.id) {
+          return {
+            success: false,
+            status: 404,
+            message: "No Idea found",
+          };
+        }
+      } else {
+        queryOptions.limit = args.limit;
+        queryOptions.offset = args.offset;
+        queryOptions.group = ["Idea.id"];
+        idea = await Idea.findAll(queryOptions);
 
-        where: {
-          isApproved: "approved",
-        },
-        limit,
-        offset,
-        group: ["Idea.id"],
-      });
-      if (!idea.length) {
-        return {
-          success: false,
-          status: 404,
-          message: "No Idea found",
-        };
+        if (!idea.length) {
+          return {
+            success: false,
+            status: 404,
+            message: "No Idea found",
+          };
+        }
       }
 
       return {
@@ -53,49 +109,6 @@ module.exports = {
       };
     }
   },
-  getIdeaById: async (id) => {
-    try {
-      const idea = await Idea.findOne({
-        attributes: {
-          include: [[fn("SUM", col("Claps.claps")), "numClaps"]],
-        },
-        include: [
-          {
-            model: Clap,
-            attributes: [],
-          },
-        ],
-        where: {
-          id,
-          isApproved: "approved",
-        },
-      });
-
-      if (!idea) {
-        return {
-          success: false,
-          status: 404,
-          message: "No Idea found",
-        };
-      }
-
-      return {
-        success: true,
-        data: {
-          idea,
-        },
-      };
-    } catch (err) {
-      console.log(err);
-
-      return {
-        success: false,
-        status: 500,
-        message: "Internal server error",
-      };
-    }
-  },
-
   createIdea: async (req, thumbnail, slug) => {
     try {
       const IdeaData = req.body;
@@ -121,37 +134,7 @@ module.exports = {
       };
     }
   },
-  checkSlug: async (title) => {
-    try {
-      let slug = slugify(title, {
-        remove: "/[*+~.()'\"!:@]/g",
-        lower: true,
-      });
 
-      const idea = await Idea.count({
-        where: {
-          slug: {
-            [Op.like]: `${slug}%`,
-          },
-        },
-      });
-
-      slug = idea ? slug + `-${idea}` : slug;
-
-      return {
-        success: true,
-        slug,
-      };
-    } catch (err) {
-      console.log(err);
-
-      return {
-        success: false,
-        status: 500,
-        message: "Internal server error",
-      };
-    }
-  },
   handleFileUpload: async (req) => {
     try {
       if (!req.files) {
@@ -189,7 +172,226 @@ module.exports = {
       return next(createHttpError(500, "Internal server error"));
     }
   },
-  validateIdea: async (id, next) => {
+  approveIdea: async (id) => {
+    try {
+      await Idea.update(
+        {
+          isApproved: "approved",
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+
+      const idea = await Idea.findOne({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          idea,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  rejectIdea: async (id, note) => {
+    try {
+      await Idea.update(
+        {
+          isApproved: "rejected",
+          note,
+        },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+
+      const idea = await Idea.findOne({
+        where: {
+          id,
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          idea,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  sendFund: async (fundData, userFund, idea) => {
+   
+    const userFundLeft = Number(userFund.amount) - Number(fundData.amount);
+    const totalFund = Number(idea.totalFund) + Number(fundData.amount);
+    
+    const t = await sequelize.transaction();
+
+    try {
+      const ideaFund = await IdeaFund.create(fundData, { transaction: t });
+
+      await UserFund.update(
+        {
+          amount: userFundLeft,
+        },
+        {
+          where: {
+            userId: fundData.userId,
+          },
+          transaction: t,
+        }
+      );
+
+      await Idea.update(
+        {
+          totalFund,
+        },
+        {
+          where: {
+            id: fundData.ideaId,
+          },
+          transaction: t,
+        }
+      );
+
+      await t.commit();
+
+      return {
+        success: true,
+        data: {
+          ideaFund,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  returnFund: async (fund, totalFund, ideaId, userId) => {
+    const t = await sequelize.transaction();
+
+    try {
+      await IdeaFund.update(
+        {
+          isReturn: true,
+        },
+
+        {
+          where: {
+            ideaId,
+            userId,
+          },
+          transaction: t,
+        }
+      );
+
+      await UserFund.update(
+        {
+          amount: fund,
+        },
+        {
+          where: {
+            userId: userId,
+          },
+          transaction: t,
+        }
+      );
+      await Idea.update(
+        {
+          totalFund,
+        },
+        {
+          where: {
+            id: ideaId,
+          },
+          transaction: t,
+        }
+      );
+      await t.commit();
+
+      let userFund = await UserFund.findOne({
+        where: {
+          userId,
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          userFund,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+      await t.rollback();
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+
+  checkSlug: async (title) => {
+    try {
+      let slug = slugify(title, {
+        remove: "/[*+~.()'\"!:@]/g",
+        lower: true,
+      });
+
+      const idea = await Idea.count({
+        where: {
+          slug: {
+            [Op.like]: `${slug}%`,
+          },
+        },
+      });
+
+      slug = idea ? slug + `-${idea}` : slug;
+
+      return {
+        success: true,
+        slug,
+      };
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  validateIdea: async (id) => {
     try {
       const idea = await Idea.findOne({
         where: {
@@ -204,7 +406,6 @@ module.exports = {
           message: "No Idea found",
         };
       }
-
       return {
         success: true,
         data: {
@@ -248,6 +449,7 @@ module.exports = {
         where: {
           userId,
           ideaId,
+          isReturn: false,
         },
       });
 
@@ -271,38 +473,50 @@ module.exports = {
       };
     }
   },
-
-  sendFund: async (fundData, userFund) => {
-    const userFundLeft = Number(userFund.amount) - Number(fundData.amount);
-
-    const t = await sequelize.transaction();
-
+  validateFundForReturn: async (ideaId, userId) => {
     try {
-      const ideaFund = await IdeaFund.create(fundData, { transaction: t });
-
-      await UserFund.update(
-        {
-          amount: userFundLeft,
+      const ideaFund = await IdeaFund.findOne({
+        where: {
+          userId,
+          ideaId,
+          isReturn: false,
         },
-        {
-          where: {
-            userId: fundData.userId,
-          },
-          transaction: t,
-        }
-      );
+      });
+      if (!ideaFund) {
+        return {
+          success: false,
+          status: 404,
+          message: "No record found",
+        };
+      }
 
-      await t.commit();
+      const x = moment(ideaFund.createdAt);
+      const y = moment();
+      const diff = y.diff(x, "days");
+      console.log("time diff", diff);
 
+      if (7 < diff) {
+        return {
+          success: false,
+          status: 400,
+          message: "Refund period is expired",
+        };
+      }
+      let userFund = await UserFund.findOne({
+        where: {
+          userId,
+        },
+      });
+      
       return {
         success: true,
         data: {
-          ideaFund,
+          userFund,
+          ideaFund
         },
       };
     } catch (err) {
       console.log(err);
-      await t.rollback();
       return {
         success: false,
         status: 500,
@@ -311,3 +525,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = ideaService;
