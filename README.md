@@ -10,6 +10,35 @@ Install dependencies
   npm install
 ```
 
+Change database information from `app-directory/config/config.json`
+```json
+    {
+    "username": "root",
+    "password": "root",
+    "database": "ideaPitch",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+    }
+```
+
+Create database 
+
+```bash
+  npx sequelize-cli db:create
+```
+
+Run database migration
+
+```bash
+  npx sequelize-cli db:migrate
+```
+
+Create admin wih database Seeder 
+
+```bash
+  npx sequelize-cli db:seed:all
+```
+
 Start the server
 
 ```bash
@@ -19,6 +48,14 @@ Start the server
 if face any sql error while fetching api, disable `only_full_group_by` from the mysql global variable. 
 [check to the documantation](https://support.cpanel.net/hc/en-us/articles/360050889873-How-do-I-disable-ONLY-FULL-GROUP-BY-in-MySQL-)
 
+
+## Admin info
+
+```bash
+  username: "admin"
+  password: "Admin1234"
+
+```
 
 
 
