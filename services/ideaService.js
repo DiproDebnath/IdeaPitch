@@ -502,7 +502,7 @@ const ideaService = {
         };
       }
 
-      if (idea.isApproved == "approved") {
+      if (  isApprove &&  idea.isApproved == "approved") {
         return {
           success: false,
           status: 404,

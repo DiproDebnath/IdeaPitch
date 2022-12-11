@@ -16,8 +16,9 @@ module.exports = function (schema, route) {
 
   return async function (req, res, next) {
     try {
+     
         let validated
-      if (req.files) {
+      if (req.body.thumbnail == "") {
          validated = await Schemas[schema][route].validateAsync(req.body, {
           allowUnknown: true,
         });

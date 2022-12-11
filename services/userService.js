@@ -1,4 +1,4 @@
-const { User, Idea } = require("../models");
+const { User, Idea, UserFund } = require("../models");
 
 const userService = {
   getUserById: async (id) => {
@@ -35,6 +35,38 @@ const userService = {
           message: "No user found",
         };
       }
+      return {
+        success: true,
+        data: {
+          user,
+        },
+      };
+    } catch (err) {
+      console.log(err);
+
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
+  getUserProfile: async (id) => {
+    try {
+      const user = await User.findOne({
+        attributes: [
+          "id", 'username',
+        ],
+        include: [
+          {
+            model : UserFund
+          },
+        ],
+        where: {
+          id,
+        },
+      });
+
       return {
         success: true,
         data: {

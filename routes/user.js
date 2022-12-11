@@ -8,6 +8,11 @@ const { captureError } = require("../utils/helper");
 
 
 router.get(
+  "/profile",
+  middleware.verifyAuth(),
+  captureError(userController.userProfile)
+);
+router.get(
   "/idea/own_idea",
   middleware.verifyAuth(),
   captureError(userController.getOwnIdea)

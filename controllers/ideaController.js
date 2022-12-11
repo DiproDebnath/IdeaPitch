@@ -110,7 +110,7 @@ module.exports = {
     const { idea } = ideaValidation.data;
 
     const fund = Number(userFund.amount) + Number(ideaFund.amount);
-    const totalFund = Number(idea.totalFund) + Number(ideaFund.amount);
+    const totalFund = Number(idea.totalFund) - Number(ideaFund.amount);
 
     const userFundData = await ideaService.returnFund(
       fund,

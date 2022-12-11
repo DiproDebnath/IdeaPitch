@@ -247,6 +247,21 @@ Returns a Idea object.
 
 ### User route
 
+
+#### Get idea created by user
+
+```http
+  GET /user/profile
+```
+
+| Parameter     | Type     | Description                       |
+| :--------     | :------- | :-------------------------------- |
+| `token`          | `string` |  **Required**. Access Token  |
+
+
+Returns user profile objects .
+
+
 #### Get idea created by user
 
 ```http

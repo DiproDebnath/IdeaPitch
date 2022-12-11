@@ -2,6 +2,14 @@ const createHttpError = require("http-errors");
 const ideaService = require("../services/ideaService");
 const userService = require("../services/userService");
 module.exports = {
+  userProfile: async (req, res) => {
+    const userData = await userService.getUserProfile(req.user.id);
+
+    if (!userData.success)
+      throw createHttpError(userData.status, userData.message);
+
+    res.json(userData.data);
+  },
   getUserById: async (req, res) => {
     const userData = await userService.getUserById(req.params.id);
 

@@ -9,7 +9,7 @@ module.exports = {
         errors.forEach(err => {
           switch (err.code) {
             case "string.pattern.base":
-              err.message = 'password must contain a-z or A-Z, 0-9 and at least 6 character';
+              err.message = 'password must contain a-z or A-Z or 0-9 and at least 6 character';
               break;
             default:
               break;
