@@ -248,7 +248,7 @@ Returns a Idea object.
 ### User route
 
 
-#### Get idea created by user
+#### Get  user profile
 
 ```http
   GET /user/profile
