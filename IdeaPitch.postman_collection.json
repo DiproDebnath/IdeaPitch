@@ -1,0 +1,771 @@
+{
+	"info": {
+		"_postman_id": "ecc94dee-14a1-422a-a5e4-5ff3a00f432d",
+		"name": "IdeaPitch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19447850"
+	},
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "signin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Admin1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{siteUrl}}/signin",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all Ideas",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/admin/idea/",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"admin",
+								"idea",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Ideas by Id",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/admin/idea/1",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"admin",
+								"idea",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve an Idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/admin/idea/1/approve",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"admin",
+								"idea",
+								"1",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject an Idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"note\": \"idea is flop\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{siteUrl}}/admin/idea/2/reject",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"admin",
+								"idea",
+								"2",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "fundRaiser",
+			"item": [
+				{
+					"name": "create Idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Iam Pro",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Iam also Pro ",
+									"type": "text"
+								},
+								{
+									"key": "budget",
+									"value": "20000000000",
+									"type": "text"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "/Users/dipro/Documents/untitled folder/Screen Shot 2022-08-05 at 5.46.02 PM.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{siteUrl}}/idea/create",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "API Documentation Guide and Best Practicesssss",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "asdfasdfasdfadsf asdfaosdf asdf asdf asfa asfasdf asdfadsf",
+									"type": "text"
+								},
+								{
+									"key": "budget",
+									"value": "200234",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{siteUrl}}/idea/1/update",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"1",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/idea/2/delete",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"2",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Own Ideas",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/user/idea/own_idea",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"user",
+								"idea",
+								"own_idea"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user profile",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/user/profile",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get Own Idea by id",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/user/idea/2",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"user",
+								"idea",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get funded idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/user/idea/funded_idea",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"user",
+								"idea",
+								"funded_idea"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Idea",
+			"item": [
+				{
+					"name": "fund An Idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"amount\" : \"25000\",\n   \"ideaId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{siteUrl}}/idea/sendFund",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"sendFund"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "return fund from the idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/idea/1/returnFund",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"1",
+								"returnFund"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "clap the idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claps\": \"234234\",\n    \"ideaId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{siteUrl}}/idea/clap",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"clap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user claps of an idea",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "headerPrefix",
+									"value": "JWT",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/user/idea/1/getclap",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"user",
+								"idea",
+								"1",
+								"getclap"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "userAuth",
+			"item": [
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"myth\",\n    \"password\": \"asdfasdf\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{siteUrl}}/signup",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"myth\",\n    \"password\": \"asdfasdf\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{siteUrl}}/signin",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "public api",
+			"item": [
+				{
+					"name": "getAllIdeas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/idea",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getIdeasById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/idea/4",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"idea",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get User By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{siteUrl}}/user/4",
+							"host": [
+								"{{siteUrl}}"
+							],
+							"path": [
+								"user",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
