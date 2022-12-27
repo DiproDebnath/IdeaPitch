@@ -17,4 +17,9 @@ router.post(
     captureError(authController.signIn)
   );
 
+router.post(
+    "/token",
+    captureError(authController.getRefreshToken)
+  );
+
 module.exports = router;

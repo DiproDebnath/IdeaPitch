@@ -9,10 +9,30 @@ module.exports = {
       throw createHttpError(authData.status, authData.message);
 
     const { id, username, isAdmin } = authData.data;
-    const token = authService.generateToken(id, username, isAdmin);
+    const token = authService.generateToken(id, username, isAdmin, "10m");
+    const refreshToken = authService.generateToken(id, username, isAdmin, "30d", true);
     authData.data.accessToken = token;
+    authData.data.refreshToken = refreshToken;
  
     res.json(authData.data);
+  },
+
+  getRefreshToken: async(req, res) => {
+    
+    const refreshValidation =  await authService.verifyRefreshToken(req.body.refreshToken);
+
+    if (!refreshValidation.success)
+      throw createHttpError(refreshValidation.status, refreshValidation.message);
+
+      const {tokenDetails} = refreshValidation
+      console.log(tokenDetails);
+      const token = authService.generateToken(tokenDetails.id, tokenDetails.username, tokenDetails.isAdmin, "10m", true);
+
+      res.json({
+        success: true,
+        accessToken: token
+      })
+
   },
   signUp: async (req, res) => {
     const validationData = await authService.checkUserExist(req.body);

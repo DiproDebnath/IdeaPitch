@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
-const { User, sequelize, UserFund } = require("../models");
+const { User, sequelize, UserFund, UserToken } = require("../models");
 const bcrypt = require("bcryptjs");
 const API_SECRET = require("../config/config.json")["apiSecret"];
-
 
 const authService = {
   signIn: async (userData) => {
@@ -39,7 +38,6 @@ const authService = {
         },
       };
     } catch (err) {
-    
       return {
         success: false,
         status: 500,
@@ -47,7 +45,44 @@ const authService = {
       };
     }
   },
+  verifyRefreshToken: async (refreshToken) => {
+    try {
+      const token = await UserToken.findOne({
+        where: { token: refreshToken },
+      });
 
+      if (!token) {
+        return {
+          success: false,
+          status: 400,
+          message: "Invalid refresh token",
+        };
+      }
+
+      return jwt.verify(refreshToken, API_SECRET, (err, tokenDetails) => {
+        if (err)
+          return {
+            success: false,
+            message: "Invalid refresh token",
+          };
+
+          return {
+            tokenDetails,
+            success: true,
+            message: "Valid refresh token",
+          };
+      });
+
+      
+    } catch (err) {
+      console.log(err);
+      return {
+        success: false,
+        status: 500,
+        message: "Internal server error",
+      };
+    }
+  },
   signUp: async (userData) => {
     const t = await sequelize.transaction();
     try {
@@ -86,8 +121,9 @@ const authService = {
       };
     }
   },
-  generateToken: (id, username, isAdmin) => {
-    return jwt.sign(
+  generateToken: (id, username, isAdmin, ttl, isRefreshToken = false) => {
+    
+   const token =  jwt.sign(
       {
         id,
         username,
@@ -95,9 +131,17 @@ const authService = {
       },
       API_SECRET,
       {
-        expiresIn: "24h",
+        expiresIn: ttl,
       }
     );
+    console.log("isRefreshToken", isRefreshToken);
+    if(isRefreshToken){
+      UserToken.create({
+        token,
+        userId: id
+      })
+    } 
+    return token
   },
 
   checkUserExist: async (userData) => {
@@ -127,6 +171,5 @@ const authService = {
     }
   },
 };
-
 
 module.exports = authService;
