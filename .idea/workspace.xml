@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="873f837d-3246-4b66-ac63-0900db1a36bf" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/config/config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/db/db.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/graphql/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/idea/idea.typeDefs.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/admin/ideaController.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/authController.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/clapController.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/ideaController.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/controllers/userController.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/middlewares/authMiddlaware.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/middlewares/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/middlewares/requestValidator.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20221207065757-create-user.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20221207071451-create-idea-fund.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20221207071504-create-idea.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20221207071529-create-clap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20221207073937-create-user-fund.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/20221227112948-create-user-token.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/clap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/idea.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ideafund.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/user.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/userfund.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/usertoken.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/admin/idea.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/auth.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/clap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/idea.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/user.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/seeders/20221208062406-User.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/authService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/clapService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/ideaService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/userService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/helper.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/validatorSchemas/authSchema.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/validatorSchemas/clapSchema.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/validatorSchemas/ideaSchema.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/validatorSchemas/index.js" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="ProjectId" id="2JtVKkMeQtWR9Fz9I97LI9WDIvw" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "javascript.nodejs.core.library.configured.version": "16.15.0",
+    "javascript.nodejs.core.library.typings.version": "16.18.11",
+    "last_opened_file_path": "/Users/dipro/Work/Projects/IdeaPitch/src/utils",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "Errors",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "PLAIN_TEXT"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/utils" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="873f837d-3246-4b66-ac63-0900db1a36bf" name="Changes" comment="" />
+      <created>1672897305331</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1672897305331</updated>
+      <workItem from="1672897306985" duration="644000" />
+      <workItem from="1672897986444" duration="4826000" />
+      <workItem from="1672909636333" duration="5199000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
