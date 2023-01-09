@@ -1,5 +1,7 @@
-const { ApolloServer } = require("@apollo/server");
 require("dotenv").config();
+require("./src/db/db");
+
+const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
 const {
   ApolloServerPluginDrainHttpServer,
@@ -8,9 +10,10 @@ const express = require("express");
 const fileUpload = require("express-fileupload");
 const http = require("http");
 const cors = require("cors");
-const { typeDefs, resolvers } = require("./src/graphql");
-require('./src/db/db');
+const cookieParser = require("cookie-parser");
 
+const { typeDefs, resolvers } = require("./src/graphql");
+const { validateAccessToken } = require("./src/utils/jwt");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -18,6 +21,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  // includeStacktraceInErrorResponses: false
 });
 
 (async function () {
@@ -26,13 +30,43 @@ const server = new ApolloServer({
   app.use(
     "/graphql",
     cors(),
+    cookieParser(),
     express.json(),
     express.static("uploads"),
     fileUpload({
       createParentPath: true,
     }),
     expressMiddleware(server, {
-      context: async ({ req }) => ({ token: req.headers.token }),
+      context: async ({ req, res }) => {
+        let authData = null;
+        const token =
+          req.headers.authorization && req.headers.authorization.split(" ")[1];
+        if (token) {
+          const decoded = validateAccessToken(token);
+
+          if (decoded) {
+            authData = decoded;
+          }
+        }
+        return {
+          res,
+          req,
+          authData,
+          clearCookie(name) {
+            res.clearCookie(name);
+          },
+          getCookie(name) {
+            return req.cookies[name];
+          },
+          setCookie(name, value) {
+            res.cookie(name, value, {
+              secure: true,
+              httpOnly: true,
+              maxAge: 2592000000,
+            });
+          },
+        };
+      },
     })
   );
 

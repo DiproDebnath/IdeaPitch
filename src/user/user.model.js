@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 const {role} = require("./user.enum");
 mongoose.Promise = global.Promise;
 
-const {ADMIN} = role;
+const {MEMBER} = role;
 
 const userSchema = new Schema(
   {
@@ -21,12 +21,13 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       required: true,
-      default: ADMIN,
+      default: MEMBER,
       enum: Object.values(role),
     },
     userFund: {
       amount: {
         type: Number,
+        default: 100000,
         required: true,
         trim: true,
       },
