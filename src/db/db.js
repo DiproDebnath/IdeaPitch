@@ -6,7 +6,10 @@ mongoose.connect(mongoDB.URI,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
-    }
+    },
+    () => {
+        console.log("mongdb is connected");
+      }
 )
 
 module.exports = mongoose;

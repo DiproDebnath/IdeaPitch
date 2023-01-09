@@ -5,12 +5,11 @@ const {
   ApolloServerPluginDrainHttpServer,
 } = require("@apollo/server/plugin/drainHttpServer");
 const express = require("express");
-const fileUpload = require("express-fileupload")
+const fileUpload = require("express-fileupload");
 const http = require("http");
 const cors = require("cors");
-const {typeDefs, resolvers} = require("./src/graphql");
-
-
+const { typeDefs, resolvers } = require("./src/graphql");
+require('./src/db/db');
 
 
 const app = express();
@@ -20,20 +19,21 @@ const server = new ApolloServer({
   resolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
+
 (async function () {
   await server.start();
 
   app.use(
-      "/graphql",
-      cors(),
-      express.json(),
-      express.static("uploads"),
-      fileUpload({
-        createParentPath: true
-      }),
-      expressMiddleware(server, {
-        context: async ({ req }) => ({ token: req.headers.token }),
-      })
+    "/graphql",
+    cors(),
+    express.json(),
+    express.static("uploads"),
+    fileUpload({
+      createParentPath: true,
+    }),
+    expressMiddleware(server, {
+      context: async ({ req }) => ({ token: req.headers.token }),
+    })
   );
 
   await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
