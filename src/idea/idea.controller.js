@@ -6,6 +6,7 @@ const {
   HTTP_CODE_401_MESSAGE,
   THUMBNAIL_REQUIRED,
   REQUIRED_THUMBNAIL_TYPE,
+  MAX_FILE_SIZE,
 } = require("../utils/constants");
 const { validateAccessToken } = require("../utils/jwt");
 
@@ -30,7 +31,7 @@ const ideaController = {
           message: HTTP_CODE_401_MESSAGE,
         });
       }
-console.log(req.files);
+
       if (!req.files) {
         return res.status(HTTP_CODE_422_CODE).json({
           success: false,
@@ -51,17 +52,18 @@ console.log(req.files);
           });
         }
 
-        if (file.size > maxFileSize) {
+        if (file.size > MAX_FILE_SIZE) {
           res.status(HTTP_CODE_422_CODE).json({
             success: false,
             message: THUMBNAIL_MAXIMUM_SIZE,
           });
         }
 
-        const fileUrl = await handleFileUpload();
-        return fileUrl;
+        const fileUrl = await handleFileUpload(file);
+        return res.json({url : fileUrl});
       }
     } catch (error) {
+      console.log(error);
       res.status(HTTP_CODE_500_CODE).json({
         success: false,
         message: HTTP_CODE_500_MESSAGE,

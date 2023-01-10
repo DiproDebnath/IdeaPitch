@@ -72,6 +72,7 @@ const ideaSchema = new Schema({
   totalFund : {
     type: Number,
     trim: true,
+    default: 0
   },
   status: {
     type: String,
@@ -84,5 +85,11 @@ const ideaSchema = new Schema({
     trim: true,
   }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+
+
+// index
+
+
 
 module.exports = mongoose.model('Idea', ideaSchema);

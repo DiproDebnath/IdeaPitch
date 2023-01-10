@@ -17,6 +17,11 @@ const { validateAccessToken } = require("./src/utils/jwt");
 const { thumbnailUpload } = require("./src/idea/idea.controller");
 
 const app = express();
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 const httpServer = http.createServer(app);
 const server = new ApolloServer({
   typeDefs,
@@ -34,9 +39,7 @@ const server = new ApolloServer({
     cookieParser(),
     express.json(),
     express.static("uploads"),
-    fileUpload({
-      createParentPath: true,
-    }),
+
     expressMiddleware(server, {
       context: async ({ req, res }) => {
         let currentUser = null;
@@ -71,7 +74,7 @@ const server = new ApolloServer({
     })
   );
 
-  app.post('/upload', thumbnailUpload)
+  app.post("/upload", thumbnailUpload);
 
   await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000/graphql`);

@@ -35,6 +35,7 @@ const ideaTypeDefs = `#graphql
     input createIdeaInput {
         title: String!
         description: String!
+        thumbnail: String
         budget: Float!
     }
 
@@ -46,7 +47,7 @@ const ideaTypeDefs = `#graphql
         
     }
     
-    
+
     # Mutation
     type Mutation {
         createIdea(createIdeaInput: createIdeaInput!) : Idea!

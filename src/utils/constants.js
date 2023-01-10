@@ -28,5 +28,6 @@ module.exports = {
   THUMBNAIL_REQUIRED: "thumbnail is required",
   REQUIRED_THUMBNAIL_TYPE: "thumbnail type must be jpeg or png or webp",
   THUMBNAIL_MAXIMUM_SIZE: "maximum file size limit 2MB",
+  MAX_FILE_SIZE : 2097152,
   role
 };
