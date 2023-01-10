@@ -32,19 +32,25 @@ const ideaTypeDefs = `#graphql
     
     }
 
+    input createIdeaInput {
+        title: String!
+        description: String!
+        budget: Float!
+    }
+
 
     # Queries
     type Query {
         getIdeas: [Idea!]
         getIdeabyId(id: ID!): Idea!
+        
     }
     
-
+    
     # Mutation
-
-    # type Mutation {
-
-    # }
+    type Mutation {
+        createIdea(createIdeaInput: createIdeaInput!) : Idea!
+    }
     
     
     `;

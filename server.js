@@ -14,6 +14,7 @@ const cookieParser = require("cookie-parser");
 
 const { typeDefs, resolvers } = require("./src/graphql");
 const { validateAccessToken } = require("./src/utils/jwt");
+const { thumbnailUpload } = require("./src/idea/idea.controller");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -38,20 +39,20 @@ const server = new ApolloServer({
     }),
     expressMiddleware(server, {
       context: async ({ req, res }) => {
-        let authData = null;
+        let currentUser = null;
         const token =
           req.headers.authorization && req.headers.authorization.split(" ")[1];
         if (token) {
-          const decoded = validateAccessToken(token);
+          const decoded = await validateAccessToken(token);
 
           if (decoded) {
-            authData = decoded;
+            currentUser = decoded;
           }
         }
         return {
           res,
           req,
-          authData,
+          currentUser,
           clearCookie(name) {
             res.clearCookie(name);
           },
@@ -69,6 +70,8 @@ const server = new ApolloServer({
       },
     })
   );
+
+  app.post('/upload', thumbnailUpload)
 
   await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000/graphql`);

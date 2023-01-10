@@ -8,5 +8,15 @@ const authService = {
     });
     return user;
   },
+  getUserByUsername: async (username) => {
+    return User.findOne({ username });
+  },
+  isUserExists: async (query= {}) => {
+    const isExists = await User.exists(query);
+    return isExists;
+  },
+  generateAccessAndRefreshToken: async (payload) => {
+
+  }
 };
 module.exports = authService;
