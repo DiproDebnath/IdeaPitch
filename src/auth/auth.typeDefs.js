@@ -16,6 +16,7 @@ const authTypeDefs = `#graphql
     type Mutation {
         signUp(userAuthInput:  userAuthInput!) : AuthReturn!
         signIn(userAuthInput: userAuthInput!) : AuthReturn!
+        refreshToken: AuthReturn!
     }
     `;
 

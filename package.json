@@ -32,7 +32,8 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
     "mongoose": "^6.8.2",
-    "slugify": "^1.6.5"
+    "slugify": "^1.6.5",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

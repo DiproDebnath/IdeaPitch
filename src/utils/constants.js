@@ -1,9 +1,9 @@
 const role = {
-  ADMIN: 'admin',
-  MODERATOR: 'moderator',
-  REVIEWER: 'reviewer',
-  SUPER_USER: 'super_user',
-  MEMBER: 'member',
+  ADMIN: "admin",
+  MODERATOR: "moderator",
+  REVIEWER: "reviewer",
+  SUPER_USER: "super_user",
+  MEMBER: "member",
 };
 
 module.exports = {
@@ -24,10 +24,13 @@ module.exports = {
   HTTP_CODE_429_MESSAGE: "Too Many Requests",
   HTTP_CODE_429_CODE: "429",
   USER_ALREADY_EXISTS: "User already Exists",
+  USERNAME_OR_PASSWORD_INVALID: "Username or password is invalid",
   NOT_AUTHORIZED: "User is not authorized",
   THUMBNAIL_REQUIRED: "thumbnail is required",
   REQUIRED_THUMBNAIL_TYPE: "thumbnail type must be jpeg or png or webp",
   THUMBNAIL_MAXIMUM_SIZE: "maximum file size limit 2MB",
-  MAX_FILE_SIZE : 2097152,
-  role
+  TOKEN_GENERATION_FAILD: "Token generate failed 1, try again!",
+  SESSION_EXPIRED: "Your previous session was expired! Please login",
+  MAX_FILE_SIZE: 2097152,
+  role,
 };

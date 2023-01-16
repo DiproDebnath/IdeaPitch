@@ -13,8 +13,13 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const { typeDefs, resolvers } = require("./src/graphql");
-const { validateAccessToken } = require("./src/utils/jwt");
+const { validateToken } = require("./src/utils/jwt");
 const { thumbnailUpload } = require("./src/idea/idea.controller");
+const corsConfig = {
+  origin: ["http://localhost:4000", "https://studio.apollographql.com"],
+  credentials: true,
+  exposedHeaders: ["set-cookie"],
+};
 
 const app = express();
 app.use(
@@ -22,6 +27,8 @@ app.use(
     createParentPath: true,
   })
 );
+app.use(cors(corsConfig));
+app.use(cookieParser());
 const httpServer = http.createServer(app);
 const server = new ApolloServer({
   typeDefs,
@@ -35,8 +42,7 @@ const server = new ApolloServer({
 
   app.use(
     "/graphql",
-    cors(),
-    cookieParser(),
+
     express.json(),
     express.static("uploads"),
 
@@ -46,7 +52,7 @@ const server = new ApolloServer({
         const token =
           req.headers.authorization && req.headers.authorization.split(" ")[1];
         if (token) {
-          const decoded = await validateAccessToken(token);
+          const decoded = await validateToken(token);
 
           if (decoded) {
             currentUser = decoded;
@@ -67,6 +73,7 @@ const server = new ApolloServer({
               secure: true,
               httpOnly: true,
               maxAge: 2592000000,
+              sameSite: "None",
             });
           },
         };
