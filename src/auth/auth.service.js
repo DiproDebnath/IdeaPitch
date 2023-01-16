@@ -4,19 +4,18 @@ const { generateToken, generateRefreshToken } = require("../utils/jwt");
 
 const authService = {
   createUser: async (args) => {
-    const user = await User.create({
-      username,
-      password,
-    });
+    const user = await User.create(args);
     return user;
   },
-  getUserByUsername: async (username) => {
-    const user = await User.findOne({ username });
-    return user;
-  },
-  getUserById: async (id, select = {}) => {
-    const user = await User.findOne({ _id: id }, select);
-    return user;
+
+  removeRefreshTokenByUserId: async (id, deviceId) => {
+    const user = await User.findById(id);
+    if (!user) return false;
+    if (user.refreshToken) {
+      user.refreshToken.delete(deviceId);
+      await user.save();
+    }
+    return true;
   },
   isUserExists: async (query = {}) => {
     const isExists = await User.exists(query);
@@ -25,11 +24,9 @@ const authService = {
   validatePassword: async (username, password) => {
     const user = await User.findOne({ username });
     const isValidPassword = await user.comparePassword(password);
-    console.log(isValidPassword);
     return isValidPassword;
   },
   generateAccessAndRefreshToken: async (payload) => {
-    console.log(payload);
     const token = await generateToken({
       id: payload.id,
       username: payload.username,

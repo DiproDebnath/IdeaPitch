@@ -1,60 +1,96 @@
+const { composeResolvers } = require("@graphql-tools/resolvers-composition");
+
 const {
-  HTTP_CODE_422_CODE,
-  HTTP_CODE_400_MESSAGE,
-  HTTP_CODE_400_CODE,
   HTTP_CODE_500_MESSAGE,
-  HTTP_CODE_422_MESSAGE,
+  NOT_AUTHORIZED,
   HTTP_CODE_500_CODE,
-  USER_ALREADY_EXISTS,
+  HTTP_CODE_401_CODE,
 } = require("../utils/constants");
 
-const { createIdea, checkSlug } = require("./idea.service");
+const {
+  createIdea,
+  checkSlug,
+  validateIdeaAndOwner,
+  updateIdea,
+  deleteIdea,
+} = require("./idea.service");
 const throwError = require("../utils/errorHandler");
-const { composeResolvers } = require("@graphql-tools/resolvers-composition");
-const requestValidator = require("../utils/resquestValidator");
-const { authenticated } = require("../utils/auth");
-const { createIdea: createIdeaValidator } = require("./idea.validator");
+
+const { authenticated } = require("../middleware/auth.middleware");
+const {
+  createIdeaValidator,
+  updateIdeaValidator,
+} = require("./idea.validator");
+const requestValidator = require("../middleware/resquestValidator");
+
+const middleware = {
+  Mutation: {
+    createIdea: [authenticated(), requestValidator(createIdeaValidator)],
+    updateIdea: [authenticated(), requestValidator(updateIdeaValidator)],
+    deleteIdea: [authenticated()],
+  },
+};
 
 const ideaResolvers = {
   Query: {
-    getIdeas: async (parent, args, ctx) => {
-      return [{ id: 1 }];
-    },
-    getIdeabyId: async (parent, args, ctx) => {
-      return "hello";
-    },
+    getIdeas: async (_, args, ctx) => [{ id: 1 }],
+    getIdeabyId: async (_, args, ctx) => "hello",
   },
   Mutation: {
     createIdea: async (parent, args, ctx) => {
       const { createIdeaInput } = args;
-
       try {
         const slugValidationRes = await checkSlug(createIdeaInput.title);
-
         const createIdeaData = {
           ...createIdeaInput,
           slug: slugValidationRes,
           owner: ctx.currentUser.id,
         };
-
         const createIdeaRes = await createIdea(createIdeaData);
-
         return createIdeaRes;
       } catch (err) {
-        console.log(err);
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    updateIdea: async (parent, args, ctx) => {
+      const updateIdeaData = {
+        ...args.updateIdeaInput,
+        owner: ctx.currentUser?.id,
+      };
+      try {
+        const checkIdeaAndOwner = await validateIdeaAndOwner(updateIdeaData);
+
+        if (!checkIdeaAndOwner) {
+          return throwError(HTTP_CODE_401_CODE, NOT_AUTHORIZED);
+        }
+
+        const updateIdeaRes = await updateIdea(updateIdeaData);
+
+        return updateIdeaRes;
+      } catch (err) {
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    deleteIdea: async (parent, args, ctx) => {
+      const deleteIdeaData = {
+        id: args.id,
+        owner: ctx.currentUser?.id,
+      };
+      try {
+        const checkIdeaAndOwner = await validateIdeaAndOwner(deleteIdeaData);
+
+        if (!checkIdeaAndOwner) {
+          return throwError(HTTP_CODE_401_CODE, NOT_AUTHORIZED);
+        }
+
+        const deleteIdeaRes = await deleteIdea(deleteIdeaData.id);
+
+        return deleteIdeaRes;
+      } catch (err) {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
   },
 };
 
-const resolversComposition = {
-  "Mutation.createIdea": [
-    authenticated(),
-    requestValidator(createIdeaValidator, "userAuthInput"),
-  ],
-};
-
-const composedResolvers = composeResolvers(ideaResolvers, resolversComposition);
-
-module.exports = composedResolvers;
+module.exports = composeResolvers(ideaResolvers, middleware);

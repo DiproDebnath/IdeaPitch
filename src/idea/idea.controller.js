@@ -7,6 +7,7 @@ const {
   THUMBNAIL_REQUIRED,
   REQUIRED_THUMBNAIL_TYPE,
   MAX_FILE_SIZE,
+  THUMBNAIL_MAXIMUM_SIZE,
 } = require("../utils/constants");
 const { validateAccessToken } = require("../utils/jwt");
 
@@ -37,34 +38,33 @@ const ideaController = {
           success: false,
           message: THUMBNAIL_REQUIRED,
         });
-      } else {
-        const file = req.files.thumbnail;
-
-        const checkFileType =
-          file.mimetype == "image/jpeg" ||
-          file.mimetype == "image/png" ||
-          file.mimetype == "image/webp";
-
-        if (!checkFileType) {
-          return res.status(HTTP_CODE_422_CODE).json({
-            success: false,
-            message: REQUIRED_THUMBNAIL_TYPE,
-          });
-        }
-
-        if (file.size > MAX_FILE_SIZE) {
-          res.status(HTTP_CODE_422_CODE).json({
-            success: false,
-            message: THUMBNAIL_MAXIMUM_SIZE,
-          });
-        }
-
-        const fileUrl = await handleFileUpload(file);
-        return res.json({url : fileUrl});
       }
+
+      const file = req.files.thumbnail;
+
+      const checkFileType =
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/png" ||
+        file.mimetype === "image/webp";
+
+      if (!checkFileType) {
+        return res.status(HTTP_CODE_422_CODE).json({
+          success: false,
+          message: REQUIRED_THUMBNAIL_TYPE,
+        });
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        res.status(HTTP_CODE_422_CODE).json({
+          success: false,
+          message: THUMBNAIL_MAXIMUM_SIZE,
+        });
+      }
+
+      const fileUrl = await handleFileUpload(file);
+      return res.json({ url: fileUrl });
     } catch (error) {
-      console.log(error);
-      res.status(HTTP_CODE_500_CODE).json({
+      return res.status(HTTP_CODE_500_CODE).json({
         success: false,
         message: HTTP_CODE_500_MESSAGE,
       });

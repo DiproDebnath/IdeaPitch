@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const Joi = require("joi");
 
 const authSchema = Joi.object()
@@ -5,7 +6,7 @@ const authSchema = Joi.object()
   .keys({
     username: Joi.string().required(),
     password: Joi.string()
-      .pattern(new RegExp("^[a-zA-Z0-9]{6,30}$"))
+      .pattern(/^[a-zA-Z0-9]{6,30}$/)
       .required()
       .error((errors) => {
         errors.forEach((err) => {
@@ -22,7 +23,5 @@ const authSchema = Joi.object()
       }),
   });
 module.exports = {
-  authValidator: (args) => {
-    return authSchema.validate(args.userAuthInput);
-  },
+  authValidator: (args) => authSchema.validate(args.userAuthInput),
 };

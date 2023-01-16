@@ -38,6 +38,13 @@ const ideaTypeDefs = `#graphql
         thumbnail: String
         budget: Float!
     }
+    input updateIdeaInput {
+        id: ID!
+        title: String
+        description: String
+        thumbnail: String
+        budget: Float
+    }
 
 
     # Queries
@@ -46,11 +53,11 @@ const ideaTypeDefs = `#graphql
         getIdeabyId(id: ID!): Idea!
         
     }
-    
-
     # Mutation
     type Mutation {
         createIdea(createIdeaInput: createIdeaInput!) : Idea!
+        updateIdea(updateIdeaInput: updateIdeaInput!) : Idea!
+        deleteIdea(id: ID!) : Boolean!
     }
     
     

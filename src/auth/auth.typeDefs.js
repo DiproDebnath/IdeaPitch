@@ -17,6 +17,7 @@ const authTypeDefs = `#graphql
         signUp(userAuthInput:  userAuthInput!) : AuthReturn!
         signIn(userAuthInput: userAuthInput!) : AuthReturn!
         refreshToken: AuthReturn!
+        signOut: Boolean!
     }
     `;
 
