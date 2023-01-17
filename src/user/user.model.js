@@ -1,11 +1,23 @@
+/* eslint-disable consistent-return */
 const mongoose = require("mongoose");
+
 const { Schema } = mongoose;
-const { role } = require("../utils/constants");
 const bcrypt = require("bcryptjs");
-mongoose.Promise = global.Promise;
+const { role } = require("../utils/constants");
 
 const { MEMBER } = role;
 
+const ideaClaps = new Schema({
+  idea: {
+    type: Schema.Types.ObjectId,
+    ref: "Idea",
+    required: true,
+    trim: true,
+  },
+  claps: {
+    type: Number,
+  },
+});
 const userSchema = new Schema(
   {
     username: {
@@ -18,6 +30,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
+    ideaClaps: [ideaClaps],
     refreshToken: {
       type: Map,
       of: String,
@@ -41,21 +54,23 @@ const userSchema = new Schema(
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-userSchema.pre("save", function (next) {
+userSchema.index({ username: 1 }, { unique: true });
+
+userSchema.pre("save", function save(next) {
   const user = this;
   if (!user.isModified("password")) return next();
 
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return next(err);
-    bcrypt.hash(user.password, salt, (err, hash) => {
-      if (err) return next(err);
+    bcrypt.hash(user.password, salt, (error, hash) => {
+      if (error) return next(error);
       user.password = hash;
-      next();
+      return next();
     });
   });
 });
 
-userSchema.methods.comparePassword = function (inputPassword) {
+userSchema.methods.comparePassword = function comparePassword(inputPassword) {
   return bcrypt.compare(inputPassword, this.password);
 };
 

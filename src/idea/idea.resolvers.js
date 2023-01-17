@@ -5,25 +5,32 @@ const {
   NOT_AUTHORIZED,
   HTTP_CODE_500_CODE,
   HTTP_CODE_401_CODE,
+  role,
 } = require("../utils/constants");
-
+const { status } = require("./idea.enum");
 const {
   createIdea,
   checkSlug,
   validateIdeaAndOwner,
   updateIdea,
   deleteIdea,
+  getIdeas,
 } = require("./idea.service");
 const throwError = require("../utils/errorHandler");
 
-const { authenticated } = require("../middleware/auth.middleware");
+const { authenticated, hasRole } = require("../middleware/auth.middleware");
 const {
   createIdeaValidator,
   updateIdeaValidator,
 } = require("./idea.validator");
 const requestValidator = require("../middleware/resquestValidator");
+const ideaTypeRosolver = require("./idea.typeResolver");
 
 const middleware = {
+  Query: {
+    getIdeas: [authenticated(), hasRole(role.ADMIN)],
+    getIdeaById: [authenticated(), hasRole(role.ADMIN)],
+  },
   Mutation: {
     createIdea: [authenticated(), requestValidator(createIdeaValidator)],
     updateIdea: [authenticated(), requestValidator(updateIdeaValidator)],
@@ -33,8 +40,54 @@ const middleware = {
 
 const ideaResolvers = {
   Query: {
-    getIdeas: async (_, args, ctx) => [{ id: 1 }],
-    getIdeabyId: async (_, args, ctx) => "hello",
+    getPublicIdeas: async (_, args) => {
+      try {
+        const filter = {
+          ...args.filter,
+          status: status.APPROVED,
+        };
+        const ideas = getIdeas(filter);
+
+        return ideas;
+      } catch (err) {
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    getPublicIdeaById: async (_, args) => {
+      try {
+        const filter = {
+          id: args.id,
+          status: status.APPROVED,
+        };
+        const ideas = getIdeas(filter, {}, true);
+
+        return ideas;
+      } catch (err) {
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    getIdeas: async (_, args) => {
+      try {
+        const filter = {
+          ...args?.filter,
+        };
+
+        const ideas = getIdeas(filter);
+
+        return ideas;
+      } catch (err) {
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    getIdeaById: async (_, args) => {
+      try {
+        const ideas = getIdeas({ id: args.id }, {}, true);
+
+        return ideas;
+      } catch (err) {
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
   },
   Mutation: {
     createIdea: async (parent, args, ctx) => {
@@ -91,6 +144,7 @@ const ideaResolvers = {
       }
     },
   },
+  Idea: ideaTypeRosolver,
 };
 
 module.exports = composeResolvers(ideaResolvers, middleware);

@@ -4,7 +4,8 @@
   "description": "IdeaPitch is an app where anyone can pitch their idea and raise funds to give life to the idea.",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed:admin": "node src/seed/seedAdmin.js"
   },
   "repository": {
     "type": "git",

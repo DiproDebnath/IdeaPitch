@@ -4,6 +4,25 @@ const Idea = require("./idea.model");
 
 const { PENDING } = status;
 const ideaService = {
+  getIdeas: async (
+    { page = 1, perPage = 10, ...restArgs },
+    select = {},
+    single = false
+  ) => {
+    const skip = perPage * (page - 1);
+
+    if (single) {
+      const idea = Idea.findOne({ _id: restArgs.id }, select);
+      return idea;
+    }
+    const ideas = Idea.find(restArgs, select)
+      .skip(skip)
+      .limit(perPage)
+      .sort({ createdAt: 1 });
+
+    return ideas;
+  },
+
   handleFileUpload: async (file) => {
     const thumbnail = `${Date.now().toString()}_${file.name}`;
 

@@ -45,12 +45,17 @@ const ideaTypeDefs = `#graphql
         thumbnail: String
         budget: Float
     }
-
+    input allIdeaFilter{
+        page: Int
+        perPage: Int
+    }
 
     # Queries
     type Query {
-        getIdeas: [Idea!]
-        getIdeabyId(id: ID!): Idea!
+        getIdeas(filter: allIdeaFilter): [Idea]!
+        getIdeaById(id: ID!): Idea!
+        getPublicIdeas(filter: allIdeaFilter): [Idea]!
+        getPublicIdeaById(id: ID!): Idea!
         
     }
     # Mutation

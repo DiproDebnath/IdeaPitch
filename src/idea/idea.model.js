@@ -1,20 +1,10 @@
 const mongoose = require("mongoose");
 const { status } = require("./idea.enum");
+
 const { Schema } = mongoose;
-mongoose.Promise = global.Promise;
+
 const { PENDING } = status;
 
-const userClaps = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-    trim: true,
-  },
-  claps: {
-    type: Number,
-  },
-});
 const ideaFund = new Schema({
   user: {
     type: Schema.Types.ObjectId,
@@ -64,7 +54,6 @@ const ideaSchema = new Schema(
       required: true,
       trim: true,
     },
-    userClaps: [userClaps],
     fund: [ideaFund],
     claps: {
       type: String,
@@ -90,5 +79,6 @@ const ideaSchema = new Schema(
 );
 
 // index
+ideaSchema.index({ slug: 1, owner: 1, "fund.user": 1 }, { unique: true });
 
 module.exports = mongoose.model("Idea", ideaSchema);

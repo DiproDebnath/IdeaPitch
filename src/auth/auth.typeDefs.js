@@ -5,6 +5,7 @@ const authTypeDefs = `#graphql
     }
 
     type AuthReturn{
+        id: ID!
         username: String!
         role: String!
         accessToken: String
