@@ -6,6 +6,11 @@ const createIdea = Joi.object({
   thumbnail: Joi.string(),
   budget: Joi.number().min(1000).required(),
 });
+
+const approveIdea = Joi.object({
+  id: Joi.string().required(),
+});
+
 const updateIdea = Joi.object({
   id: Joi.string(),
   title: Joi.string(),
@@ -14,16 +19,20 @@ const updateIdea = Joi.object({
   budget: Joi.number().min(1000),
 });
 
-const reject = Joi.object({
+const rejectIdea = Joi.object({
+  id: Joi.string().required(),
   note: Joi.string().required(),
 });
-const sendFund = Joi.object({
+
+const sendIdeaFund = Joi.object({
   amount: Joi.number().min(1000).required(),
   ideaId: Joi.number().integer().required(),
-  note: Joi.string(),
 });
 
 module.exports = {
   createIdeaValidator: (args) => createIdea.validate(args.createIdeaInput),
   updateIdeaValidator: (args) => updateIdea.validate(args.updateIdeaInput),
+  rejectIdeaValidator: (args) => rejectIdea.validate(args),
+  approveIdeaValidator: (args) => approveIdea.validate(args),
+  sendIdeaFundValidator: (args) => sendIdeaFund.validate(args),
 };

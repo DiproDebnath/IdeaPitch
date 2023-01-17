@@ -6,6 +6,8 @@ const {
   HTTP_CODE_500_CODE,
   HTTP_CODE_401_CODE,
   role,
+  HTTP_CODE_404_CODE,
+  HTTP_CODE_404_MESSAGE,
 } = require("../utils/constants");
 const { status } = require("./idea.enum");
 const {
@@ -15,6 +17,9 @@ const {
   updateIdea,
   deleteIdea,
   getIdeas,
+  validateIdea,
+  approveIdea,
+  rejectIdea,
 } = require("./idea.service");
 const throwError = require("../utils/errorHandler");
 
@@ -22,6 +27,8 @@ const { authenticated, hasRole } = require("../middleware/auth.middleware");
 const {
   createIdeaValidator,
   updateIdeaValidator,
+  approveIdeaValidator,
+  rejectIdeaValidator,
 } = require("./idea.validator");
 const requestValidator = require("../middleware/resquestValidator");
 const ideaTypeRosolver = require("./idea.typeResolver");
@@ -32,6 +39,16 @@ const middleware = {
     getIdeaById: [authenticated(), hasRole(role.ADMIN)],
   },
   Mutation: {
+    approveIdea: [
+      authenticated(),
+      hasRole(role.ADMIN),
+      requestValidator(approveIdeaValidator),
+    ],
+    rejectIdea: [
+      authenticated(),
+      hasRole(role.ADMIN),
+      requestValidator(rejectIdeaValidator),
+    ],
     createIdea: [authenticated(), requestValidator(createIdeaValidator)],
     updateIdea: [authenticated(), requestValidator(updateIdeaValidator)],
     deleteIdea: [authenticated()],
@@ -40,6 +57,7 @@ const middleware = {
 
 const ideaResolvers = {
   Query: {
+    // public resolver
     getPublicIdeas: async (_, args) => {
       try {
         const filter = {
@@ -53,6 +71,8 @@ const ideaResolvers = {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
+
+    // public resolver
     getPublicIdeaById: async (_, args) => {
       try {
         const filter = {
@@ -66,6 +86,8 @@ const ideaResolvers = {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
+
+    // admin resolver
     getIdeas: async (_, args) => {
       try {
         const filter = {
@@ -79,6 +101,8 @@ const ideaResolvers = {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
+
+    // admin resolver
     getIdeaById: async (_, args) => {
       try {
         const ideas = getIdeas({ id: args.id }, {}, true);
@@ -90,6 +114,46 @@ const ideaResolvers = {
     },
   },
   Mutation: {
+    // admin resolver
+    approveIdea: async (parent, args) => {
+      try {
+        const validateIdeaData = await validateIdea(args.id);
+
+        if (!validateIdeaData)
+          return throwError(HTTP_CODE_404_CODE, HTTP_CODE_404_MESSAGE);
+
+        const approvedIdeaRes = await approveIdea({
+          id: args.id,
+          status: status.APPROVED,
+        });
+
+        return approvedIdeaRes.toJSON();
+      } catch (err) {
+        console.log(err);
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    // admin resolver
+    rejectIdea: async (parent, args) => {
+      try {
+        const validateIdeaData = await validateIdea(args.id);
+
+        if (!validateIdeaData)
+          return throwError(HTTP_CODE_404_CODE, HTTP_CODE_404_MESSAGE);
+
+        const rejectedIdeaRes = await rejectIdea({
+          id: args.id,
+          status: status.REJECTED,
+          note: args?.note,
+        });
+
+        return rejectedIdeaRes.toJSON();
+      } catch (err) {
+        console.log(err);
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    // member resolver
     createIdea: async (parent, args, ctx) => {
       const { createIdeaInput } = args;
       try {
@@ -105,6 +169,7 @@ const ideaResolvers = {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
+    // member resolver
     updateIdea: async (parent, args, ctx) => {
       const updateIdeaData = {
         ...args.updateIdeaInput,
@@ -124,6 +189,7 @@ const ideaResolvers = {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
+    // member resolver
     deleteIdea: async (parent, args, ctx) => {
       const deleteIdeaData = {
         id: args.id,

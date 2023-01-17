@@ -63,6 +63,8 @@ const ideaTypeDefs = `#graphql
         createIdea(createIdeaInput: createIdeaInput!) : Idea!
         updateIdea(updateIdeaInput: updateIdeaInput!) : Idea!
         deleteIdea(id: ID!) : Boolean!
+        approveIdea(id: ID!) : Idea!
+        rejectIdea(id: ID! note: String!) : Idea!
     }
     
     

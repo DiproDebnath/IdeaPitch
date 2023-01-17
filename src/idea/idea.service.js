@@ -69,6 +69,29 @@ const ideaService = {
 
     return idea;
   },
+  validateIdea: async (id, select = {}) => {
+    const idea = await Idea.findOne({ _id: id }, select);
+
+    if (!idea) {
+      return false;
+    }
+
+    return idea;
+  },
+  approveIdea: async ({ id, ...restArgs }) => {
+    const approvedIdea = Idea.findOneAndUpdate({ _id: id }, restArgs, {
+      new: true,
+    });
+
+    return approvedIdea;
+  },
+  rejectIdea: async ({ id, ...restArgs }) => {
+    const rejectedIdea = Idea.findOneAndUpdate({ _id: id }, restArgs, {
+      new: true,
+    });
+
+    return rejectedIdea;
+  },
 };
 
 module.exports = ideaService;
