@@ -4,6 +4,7 @@ const userTypeDefs = `#graphql
     }
    
     type User {
+        id: ID!
         username: String!
         role: String!
         userFund: UserFund
@@ -12,6 +13,10 @@ const userTypeDefs = `#graphql
     
     type Query {
         getUser: User!
+        userProfile: User!
+        getUserById(userId: ID!): User!
+        getOwnIdeas: [Idea]!
+        getFundedIdea: [Idea]!
     }
 
 
