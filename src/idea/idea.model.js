@@ -5,21 +5,23 @@ const { Schema } = mongoose;
 
 const { PENDING } = status;
 
-const ideaFund = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-    trim: true,
+const ideaFund = new Schema(
+  {
+    donor: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    isReturn: {
+      type: Boolean,
+      default: false,
+    },
   },
-  amount: {
-    type: Number,
-    required: true,
-  },
-  isReturn: {
-    type: Boolean,
-  },
-});
+  { timestamps: true }
+);
 
 const ideaSchema = new Schema(
   {
@@ -51,8 +53,6 @@ const ideaSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-      trim: true,
     },
     fund: [ideaFund],
     claps: {
@@ -79,6 +79,6 @@ const ideaSchema = new Schema(
 );
 
 // index
-ideaSchema.index({ slug: 1, owner: 1, "fund.user": 1 }, { unique: true });
+ideaSchema.index({ slug: 1, owner: 1, "fund.donor": 1 }, { unique: true });
 
 module.exports = mongoose.model("Idea", ideaSchema);

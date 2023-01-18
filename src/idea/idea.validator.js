@@ -26,7 +26,10 @@ const rejectIdea = Joi.object({
 
 const sendIdeaFund = Joi.object({
   amount: Joi.number().min(1000).required(),
-  ideaId: Joi.number().integer().required(),
+  ideaId: Joi.string().required(),
+});
+const returnIdeaFund = Joi.object({
+  ideaId: Joi.string().required(),
 });
 
 module.exports = {
@@ -35,4 +38,5 @@ module.exports = {
   rejectIdeaValidator: (args) => rejectIdea.validate(args),
   approveIdeaValidator: (args) => approveIdea.validate(args),
   sendIdeaFundValidator: (args) => sendIdeaFund.validate(args),
+  returnIdeaFundValidator: (args) => returnIdeaFund.validate(args),
 };

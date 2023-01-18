@@ -1,4 +1,6 @@
+/* eslint-disable eqeqeq */
 const { composeResolvers } = require("@graphql-tools/resolvers-composition");
+const moment = require("moment");
 
 const {
   HTTP_CODE_500_MESSAGE,
@@ -8,6 +10,12 @@ const {
   role,
   HTTP_CODE_404_CODE,
   HTTP_CODE_404_MESSAGE,
+  HTTP_CODE_400_CODE,
+  RESTRICT_FUND_TO_OWN_IDEA,
+  ALREADY_FUNDED,
+  NOT_ENOUGH_FUND,
+  REFUND_PERIOD_EXPIRED,
+  HTTP_CODE_400_MESSAGE,
 } = require("../utils/constants");
 const { status } = require("./idea.enum");
 const {
@@ -20,6 +28,8 @@ const {
   validateIdea,
   approveIdea,
   rejectIdea,
+  sendFund,
+  returnFund,
 } = require("./idea.service");
 const throwError = require("../utils/errorHandler");
 
@@ -29,9 +39,12 @@ const {
   updateIdeaValidator,
   approveIdeaValidator,
   rejectIdeaValidator,
+  sendIdeaFundValidator,
+  returnIdeaFundValidator,
 } = require("./idea.validator");
 const requestValidator = require("../middleware/resquestValidator");
-const ideaTypeRosolver = require("./idea.typeResolver");
+const { ideaTypeRosolver, ideaFundResolver } = require("./idea.typeResolver");
+const { getUserById } = require("../user/user.service");
 
 const middleware = {
   Query: {
@@ -52,6 +65,16 @@ const middleware = {
     createIdea: [authenticated(), requestValidator(createIdeaValidator)],
     updateIdea: [authenticated(), requestValidator(updateIdeaValidator)],
     deleteIdea: [authenticated()],
+    sendFund: [
+      authenticated(),
+      hasRole(role.MEMBER),
+      requestValidator(sendIdeaFundValidator),
+    ],
+    returnFund: [
+      authenticated(),
+      hasRole(role.MEMBER),
+      requestValidator(returnIdeaFundValidator),
+    ],
   },
 };
 
@@ -64,8 +87,8 @@ const ideaResolvers = {
           ...args.filter,
           status: status.APPROVED,
         };
-        const ideas = getIdeas(filter);
-
+        const ideas = await getIdeas(filter);
+        console.log(ideas);
         return ideas;
       } catch (err) {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
@@ -79,7 +102,7 @@ const ideaResolvers = {
           id: args.id,
           status: status.APPROVED,
         };
-        const ideas = getIdeas(filter, {}, true);
+        const ideas = await getIdeas(filter, {}, true);
 
         return ideas;
       } catch (err) {
@@ -94,7 +117,7 @@ const ideaResolvers = {
           ...args?.filter,
         };
 
-        const ideas = getIdeas(filter);
+        const ideas = await getIdeas(filter);
 
         return ideas;
       } catch (err) {
@@ -105,7 +128,7 @@ const ideaResolvers = {
     // admin resolver
     getIdeaById: async (_, args) => {
       try {
-        const ideas = getIdeas({ id: args.id }, {}, true);
+        const ideas = await getIdeas({ id: args.id }, {}, true);
 
         return ideas;
       } catch (err) {
@@ -127,7 +150,7 @@ const ideaResolvers = {
           status: status.APPROVED,
         });
 
-        return approvedIdeaRes.toJSON();
+        return approvedIdeaRes;
       } catch (err) {
         console.log(err);
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
@@ -147,9 +170,82 @@ const ideaResolvers = {
           note: args?.note,
         });
 
-        return rejectedIdeaRes.toJSON();
+        return rejectedIdeaRes;
       } catch (err) {
         console.log(err);
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    // member resolver
+    sendFund: async (parent, args, ctx) => {
+      const { id: userId } = ctx.currentUser;
+      const { amount, ideaId } = args;
+      try {
+        const validateIdeaRes = await getIdeas({ id: ideaId }, {}, true);
+
+        if (!validateIdeaRes) {
+          return throwError(HTTP_CODE_404_CODE, HTTP_CODE_404_MESSAGE);
+        }
+        if (validateIdeaRes?.owner == userId) {
+          return throwError(HTTP_CODE_400_CODE, RESTRICT_FUND_TO_OWN_IDEA);
+        }
+        const ideaFund = validateIdeaRes.fund.find(
+          (f) => f.donor == userId && f.isReturn == false
+        );
+
+        if (ideaFund && !ideaFund.isReturn) {
+          return throwError(HTTP_CODE_400_CODE, ALREADY_FUNDED);
+        }
+
+        const user = await getUserById(userId);
+
+        if (amount > user.userFund.amount) {
+          return throwError(HTTP_CODE_400_CODE, NOT_ENOUGH_FUND);
+        }
+        const userFundLeft = Number(user.userFund.amount) - Number(amount);
+        const totalFund = Number(validateIdeaRes.totalFund) + Number(amount);
+
+        const fundedIdea = await sendFund(
+          ideaId,
+          userId,
+          amount,
+          userFundLeft,
+          totalFund
+        );
+        return fundedIdea;
+      } catch (err) {
+        console.log(err);
+        return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
+      }
+    },
+    returnFund: async (parent, args, ctx) => {
+      const { id: userId } = ctx.currentUser;
+      const { ideaId } = args;
+      try {
+        const validateIdeaRes = await getIdeas({ id: ideaId }, {}, true);
+
+        const ideaFund = validateIdeaRes.fund.find((f) => f.donor == userId);
+
+        if (ideaFund.isReturn) {
+          return throwError(HTTP_CODE_400_CODE, HTTP_CODE_400_MESSAGE);
+        }
+        const x = moment(ideaFund.createdAt);
+        const y = moment();
+        const diff = y.diff(x, "days");
+
+        if (diff > 7) {
+          return throwError(HTTP_CODE_400_CODE, REFUND_PERIOD_EXPIRED);
+        }
+
+        const payload = {
+          id: ideaId,
+          userId,
+          ideaFund,
+        };
+        const idea = await returnFund(payload);
+
+        return idea;
+      } catch (err) {
         return throwError(HTTP_CODE_500_CODE, HTTP_CODE_500_MESSAGE);
       }
     },
@@ -211,6 +307,7 @@ const ideaResolvers = {
     },
   },
   Idea: ideaTypeRosolver,
+  IdeaFund: ideaFundResolver,
 };
 
 module.exports = composeResolvers(ideaResolvers, middleware);

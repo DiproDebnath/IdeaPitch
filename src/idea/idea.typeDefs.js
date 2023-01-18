@@ -5,8 +5,8 @@ const ideaTypeDefs = `#graphql
         REJECTED
     }
 
-    type ideaFund {
-        user: User
+    type IdeaFund {
+        donor: User
         amount: Float
         isReturn: Boolean
     }
@@ -28,7 +28,7 @@ const ideaTypeDefs = `#graphql
         note: String
         userClaps: userClaps
         totalFund: Float
-        fund: ideaFund
+        fund: [IdeaFund]
     
     }
 
@@ -65,6 +65,8 @@ const ideaTypeDefs = `#graphql
         deleteIdea(id: ID!) : Boolean!
         approveIdea(id: ID!) : Idea!
         rejectIdea(id: ID! note: String!) : Idea!
+        sendFund(amount: Float! ideaId: ID!) : Idea!
+        returnFund(ideaId: ID!) : Idea!
     }
     
     

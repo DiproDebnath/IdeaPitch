@@ -11,8 +11,6 @@ const ideaClaps = new Schema({
   idea: {
     type: Schema.Types.ObjectId,
     ref: "Idea",
-    required: true,
-    trim: true,
   },
   claps: {
     type: Number,

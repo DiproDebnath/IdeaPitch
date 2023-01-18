@@ -31,6 +31,10 @@ module.exports = {
   THUMBNAIL_MAXIMUM_SIZE: "maximum file size limit 2MB",
   TOKEN_GENERATION_FAILD: "Token generate failed 1, try again!",
   SESSION_EXPIRED: "Your previous session was expired! Please login",
+  RESTRICT_FUND_TO_OWN_IDEA: "You can't send fund to your own idea",
+  ALREADY_FUNDED: "You have already funded this idea",
+  NOT_ENOUGH_FUND: "You don't have enough fund",
+  REFUND_PERIOD_EXPIRED: "Refund period is expired",
   MAX_FILE_SIZE: 2097152,
   role,
 };

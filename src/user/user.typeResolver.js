@@ -1,6 +1,7 @@
 const userTypeRosolver = {
   userFund: async (user, args, ctx) => {
-    if (user.id === ctx.currentUser.id) return user.userFund;
+    console.log("userFund", user);
+    if (user.id === ctx?.currentUser?.id) return user.userFund;
     return null;
   },
 };

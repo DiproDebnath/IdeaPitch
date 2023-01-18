@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const { default: slugify } = require("slugify");
+const User = require("../user/user.model");
 const { status } = require("./idea.enum");
 const Idea = require("./idea.model");
 
@@ -12,7 +14,7 @@ const ideaService = {
     const skip = perPage * (page - 1);
 
     if (single) {
-      const idea = Idea.findOne({ _id: restArgs.id }, select);
+      const idea = await Idea.findOne({ _id: restArgs.id }, select);
       return idea;
     }
     const ideas = Idea.find(restArgs, select)
@@ -77,6 +79,68 @@ const ideaService = {
     }
 
     return idea;
+  },
+
+  sendFund: async (ideaId, userId, amount, userFundLeft, totalFund) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          userFund: { amount: userFundLeft },
+        },
+        { session }
+      );
+      const idea = await Idea.findByIdAndUpdate(
+        ideaId,
+        {
+          $push: { fund: { donor: userId, amount } },
+          totalFund,
+        },
+        { session, new: true }
+      );
+
+      await session.commitTransaction();
+      await session.endSession();
+      return idea;
+    } catch (err) {
+      console.log(err);
+      await session.abortTransaction();
+      await session.endSession();
+      return null;
+    }
+  },
+  returnFund: async ({ id, userId, ideaFund }) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      await User.findOneAndUpdate(
+        { _id: userId },
+        {
+          $inc: { "userFund.amount": ideaFund.amount },
+        },
+        { session }
+      );
+      const idea = await Idea.findOneAndUpdate(
+        { _id: id, "fund.donor": ideaFund.donor },
+        {
+          $set: { "fund.$.isReturn": true },
+          $inc: { totalFund: -ideaFund.amount },
+        },
+        { session, new: true }
+      );
+
+      await session.commitTransaction();
+      await session.endSession();
+      return idea;
+    } catch (err) {
+      await session.abortTransaction();
+      await session.endSession();
+      return null;
+    }
   },
   approveIdea: async ({ id, ...restArgs }) => {
     const approvedIdea = Idea.findOneAndUpdate({ _id: id }, restArgs, {
